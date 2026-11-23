@@ -5,3 +5,7 @@ venv/
 .env
 .streamlit/secrets.toml
 .pytest_cache/
+samples/
+output/
+tmp/
+~$*.docx
