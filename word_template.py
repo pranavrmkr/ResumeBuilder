@@ -1,5 +1,6 @@
 """Fill the supplied Word resume template and export it through Microsoft Word."""
 import os
+import re
 from io import BytesIO
 from pathlib import Path
 import tempfile
@@ -25,6 +26,21 @@ def _register_namespaces(contents):
 
 def _text(node):
     return ''.join(item.text or '' for item in node.iter(f'{{{W}}}t'))
+
+
+def _serialize_xml(root, original):
+    """Retain prefixes used in Word compatibility attributes as well as tags."""
+    namespaces = {}
+    for event, item in ET.iterparse(BytesIO(original), events=('start-ns', 'start')):
+        if event == 'start':
+            break
+        namespaces[item[0]] = item[1]
+    serialized = ET.tostring(root, encoding='utf-8', xml_declaration=True)
+    declared = set(re.findall(rb'xmlns:([\w]+)=', serialized))
+    for prefix, uri in namespaces.items():
+        if prefix and prefix != 'xml' and prefix.encode() not in declared:
+            root.set(f'xmlns:{prefix}', uri)
+    return ET.tostring(root, encoding='utf-8', xml_declaration=True)
 
 
 def _set_control(control, value):
@@ -243,7 +259,7 @@ def make_filled_docx(profile, theme_name=DEFAULT_RESUME_THEME, output_path=None)
                         if text_node.text == 'Pragdeesh Kumar P':
                             text_node.text = name
                     _replace_colors(root, theme, recolor_panel=True)
-                    contents = ET.tostring(root, encoding='utf-8', xml_declaration=True)
+                    contents = _serialize_xml(root, contents)
                 elif item.filename in ('word/styles.xml', 'word/theme/theme1.xml', 'word/numbering.xml'):
                     _register_namespaces(contents)
                     root = ET.fromstring(contents)
@@ -254,7 +270,7 @@ def make_filled_docx(profile, theme_name=DEFAULT_RESUME_THEME, output_path=None)
                                 srgb = node.find(f'{{{A}}}srgbClr')
                                 if srgb is not None:
                                     srgb.set('val', theme['accent'])
-                    contents = ET.tostring(root, encoding='utf-8', xml_declaration=True)
+                    contents = _serialize_xml(root, contents)
                 target.writestr(item, contents)
         return output_path
     except Exception:

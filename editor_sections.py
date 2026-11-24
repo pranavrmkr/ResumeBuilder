@@ -1,5 +1,6 @@
 """Editors for additional sections and local analysis tools."""
 import json
+import os
 import streamlit as st
 from dataclasses import asdict
 from models import AdditionalInfo
@@ -76,7 +77,11 @@ def additional_editor():
 def layout_editor():
     settings = st.session_state.settings
     st.caption('Choose how your resume reads on screen and in print.')
-    settings['template'] = st.selectbox('Resume template', TEMPLATES, index=TEMPLATES.index(settings['template']), key='layout_template')
+    templates = [name for name in TEMPLATES if name != 'Word Template' or os.name == 'nt']
+    if settings['template'] not in templates:
+        settings['template'] = 'Classic Professional'
+        st.info('The Word template requires Microsoft Word on Windows. Using Classic Professional here.')
+    settings['template'] = st.selectbox('Resume template', templates, index=templates.index(settings['template']), key='layout_template')
     st.caption(STYLE_DESCRIPTIONS[settings['template']])
     settings['theme'] = st.selectbox('Resume color theme', list(RESUME_THEMES),
                                      index=list(RESUME_THEMES).index(settings['theme']), key='layout_color_theme')
