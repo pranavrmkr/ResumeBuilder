@@ -46,7 +46,7 @@ def normalise_profile(data):
         raise ValueError('Invalid section settings.')
     order = list(dict.fromkeys(s for s in order if s in SECTIONS))
     result['settings'] = {
-        'template': settings.get('template') if settings.get('template') in TEMPLATES else TEMPLATES[0],
+        'template': settings.get('template') if settings.get('template') in TEMPLATES else 'Classic Professional',
         'theme': settings.get('theme') if settings.get('theme') in RESUME_THEMES else DEFAULT_RESUME_THEME,
         'section_order': order + [s for s in SECTIONS if s not in order],
         'hidden_sections': [s for s in hidden if s in SECTIONS],

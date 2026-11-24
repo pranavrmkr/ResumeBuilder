@@ -189,7 +189,7 @@ class RenderingTest(unittest.TestCase):
         self.assertLess(render(p).index('## Education'), render(p).index('## Projects'))
 
     def test_unicode_all_templates_and_links(self):
-        for template in TEMPLATES:
+        for template in (name for name in TEMPLATES if name != 'Word Template'):
             p = rich_profile()
             p['settings']['template'] = template
             with self.subTest(template=template), pdfplumber.open(BytesIO(pdf_bytes(p))) as pdf:
@@ -205,7 +205,7 @@ class RenderingTest(unittest.TestCase):
         p['experience'] = {str(i): {'job_title': f'Engineer {i}', 'company': 'Example Co', 'location': 'Remote',
             'start_date': '2020', 'end_date': 'Present', 'achievements': ('Built reliable services and collaborated on technical delivery. ' * 18 + '\n') * 3} for i in range(9)}
         p['projects']['p']['url'] = 'https://example.com/' + 'verylongidentifier' * 35
-        for template in TEMPLATES:
+        for template in (name for name in TEMPLATES if name != 'Word Template'):
             p['settings']['template'] = template
             with self.subTest(template=template), pdfplumber.open(BytesIO(pdf_bytes(p))) as pdf:
                 self.assertGreater(len(pdf.pages), 2)

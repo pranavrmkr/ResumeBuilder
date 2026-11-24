@@ -30,7 +30,7 @@ The warm light workspace uses serif headings, restrained terracotta accents, ref
 
 Choose **Preview & export → Resume template**:
 
-1. **Word Template** (default): the supplied two-column Word layout, adapted to profile, skills, contact details, experience, education, projects, and additional resume sections.
+1. **Word Template** (Windows with Microsoft Word): the supplied two-column Word layout, adapted to profile, skills, contact details, experience, education, projects, and additional resume sections.
 2. **Classic Professional**: a single column with traditional serif typography and section rules.
 3. **Modern Minimal**: sans-serif typography with restrained accent headings.
 4. **Technical Resume**: a compact layout that brings skills and projects forward.
@@ -153,13 +153,8 @@ The service sends bounded batches and shows progress; a large resume may require
 ## Streamlined workflow
 
 1. **Edit resume**: import a resume or JSON profile, choose a section from the section selector, and enter or update your information. AI controls no longer clutter editing forms.
-<<<<<<< HEAD
-2. **AI**: all provider/model settings, shared tone/length controls, whole-resume polishing, summary generation, individual field rewrites, quality checks, and Job Match Analyzer live here. Suggestions always require consent and review. Provider/model and tone/length selections survive navigation.
-3. **Preview & export**: choose the supplied Word layout or a built-in style, select a coordinated color theme, hide sections, and generate your PDF. Template and theme choices are included in JSON profiles.
-=======
 2. **AI**: NVIDIA model settings, shared tone/length controls, whole-resume polishing, summary generation, individual field rewrites, quality checks, and Job Match Analyzer live here. Suggestions always require consent and review. Model and tone/length selections survive navigation.
-3. **Preview & export**: choose one of five resume styles, set PDF text colour, hide/reorder sections, choose student emphasis, and generate your PDF. Template choices affect both preview and PDF and are included in JSON profiles.
->>>>>>> 1fe7dd2 (Use NVIDIA NIM with model fallback and structured batch responses)
+3. **Preview & export**: choose the supplied Word layout or a built-in style, select a coordinated color theme, hide sections, and generate your PDF. Template and theme choices are included in JSON profiles.
 
 Use the Continue button to move forward, or Skip AI and preview when you prefer manual writing. You can return to any step using the three-item sidebar. The last editing section is remembered. Writing preferences remain separate from resume data and are not exported with candidate profiles. No API request is triggered by navigating between steps.
 
@@ -168,3 +163,15 @@ Use the Continue button to move forward, or Skip AI and preview when you prefer 
 AI tools show a provider disclosure beside their generation buttons. Clicking Generate, Regenerate, or Improve entire resume authorizes that displayed request; there is no separate consent checkbox and no automatic request on upload or navigation. Project rewrites use the actual stack and details of the same project as context. Whole-resume project batches keep each project together and validate against that project rather than rejecting a description for mentioning its own technology stack. Suggestions still require Accept or Apply all improvements.
 
 Sidebar navigation places the resume-section selector immediately below Edit resume and above AI. Choosing a section opens the editor. The Workspace & history panel and its profile/history controls have been removed from the interface; existing in-session data is retained. JSON import/export remains available.
+
+## Local testing and cloud deployment
+
+Classic Professional is the default for new resumes. Start the app from PowerShell with `./Start-App.ps1`, or run `python -m streamlit run app.py`. Open http://localhost:8501. The launcher prefers `.venv` when present, otherwise it uses your installed Python. Stop a foreground server with Ctrl+C.
+
+For a clean installation, use Python 3.12, create a virtual environment, activate it, and run `python -m pip install -r requirements.txt`. Requirements list the direct dependencies; pip resolves their supporting packages. The Word exporter also requires Microsoft Word installed on Windows. Cloud/Linux deployments offer the five built-in PDF styles instead.
+
+To check the app manually: enter your name and contact details, add education and experience, open Preview & export, generate and download a PDF, and reopen it. Save a JSON profile and import it again to verify backup/restore. AI is optional: use a local `.env` with NVIDIA_API_KEY, or set it in cloud Secrets. Never commit the key. Drafts are session-only; save JSON before restarting.
+
+Run `python -m unittest discover -v` for automated checks. AI requests in the suite are mocked. Built-in PDF regression tests cover Unicode, links, and multi-page content; Microsoft Word rendering requires a separate local smoke test.
+
+After merging the deployment changes to GitHub, deploy `app.py` from the desired branch on Streamlit Community Cloud using Python 3.12. Add NVIDIA_API_KEY in the app's Secrets if AI is needed. Confirm editing, JSON backup/restore, AI, and PDF downloads on the deployed URL before sharing it.

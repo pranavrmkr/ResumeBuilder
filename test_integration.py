@@ -39,7 +39,7 @@ class IntegrationTest(unittest.TestCase):
             self.assertIn(expected, text)
         app.run()
         self.assertTrue(any(button.key == 'download_resume_pdf' for button in app.get('download_button')))
-        app.selectbox(key='pdf_font_theme').select('Forest Green').run()
+        app.selectbox(key='layout_color_theme').select('Navy').run()
         self.assertNotIn('generated_pdf', app.session_state)
         navigate(app, 'Personal Info')
         app.session_state['incoming'] = BytesIO(b'not json')
